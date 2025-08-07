@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Intranet</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.24.0/firebase-auth-compat.js"></script>
+  <!-- Google API -->
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🧪 Lab Intranet</h1>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#handbook">Handbook</a></li>
+        <li><a href="#duck">Rubber Duck</a></li>
+        <li><button id="loginBtn">Login</button><button id="logoutBtn" style="display:none">Logout</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="page">
+      <h2>📅 Lab Calendar</h2>
+      <div id="calendar-container">
+        <!-- Google Calendar will be embedded here -->
+        <iframe id="calendarFrame" style="border: 0" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+      </div>
+      <div id="events"></div>
+    </section>
+
+    <section id="handbook" class="page" style="display:none">
+      <h2>📘 Lab Handbook</h2>
+      <embed src="handbook.pdf" type="application/pdf" width="100%" height="600px" />
+    </section>
+
+    <section id="duck" class="page" style="display:none">
+      <h2>🦆 Rubber Duck Zone</h2>
+      <p>Talk to your duck. It listens.</p>
+      <textarea placeholder="Explain your bug..." rows="6" cols="80"></textarea>
+    </section>
+  </main>
+
+  <script src="firebase-init.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
