@@ -1,7 +1,8 @@
 // app.js
+
+// --- Handle navigation between sections ---
 document.addEventListener("DOMContentLoaded", () => {
   const pages = document.querySelectorAll(".page");
-  const navLinks = document.querySelectorAll("nav a");
 
   function showPage(hash) {
     pages.forEach(p => p.style.display = "none");
@@ -17,18 +18,92 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("hashchange", updateFromHash);
   updateFromHash();
 
-  // Auth buttons
+  // Login/Logout Buttons
   document.getElementById("loginBtn").addEventListener("click", () => {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider).catch(console.error);
+    firebase.auth().signInWithPopup(provider).catch(console.error);
   });
 
   document.getElementById("logoutBtn").addEventListener("click", () => {
-    auth.signOut().catch(console.error);
+    firebase.auth().signOut().catch(console.error);
   });
 
-  // Google Calendar Embed
-  const calendarId = "a4623564141efae6e515cab602063d535394165aee9575c947bb87d05591e25b@group.calendar.google.com";
-  const calendarSrc = `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(calendarId)}&ctz=UTC`;
-  document.getElementById("calendarFrame").src = calendarSrc;
+  // Add event button
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "➕ Add Event";
+  addBtn.onclick = () => {
+    gapi.auth2.getAuthInstance().signIn().then(createEvent);
+  };
+  document.getElementById("home").appendChild(addBtn);
 });
+
+// --- Google API Setup ---
+const CLIENT_ID = "Y396736699041-7224an41ookf6jhju82gsh2ntport39r.apps.googleusercontent.com"; // Replace with your real one
+const SCOPES = "https://www.googleapis.com/auth/calendar";
+const CALENDAR_ID = "a4623564141efae6e515cab602063d535394165aee9575c947bb87d05591e25b@group.calendar.google.com"; // Replace with your lab calendar ID
+
+function initGapi() {
+  gapi.load("client:auth2", () => {
+    gapi.client
+      .init({
+        clientId: CLIENT_ID,
+        scope: SCOPES,
+      })
+      .then(() => {
+        const isSignedIn = gapi.auth2.getAuthInstance().isSignedIn.get();
+        if (isSignedIn) {
+          loadCalendarEvents();
+        }
+      });
+  });
+}
+
+// --- Load Events from Google Calendar ---
+function loadCalendarEvents() {
+  gapi.client.calendar.events
+    .list({
+      calendarId: CALENDAR_ID,
+      timeMin: new Date().toISOString(),
+      showDeleted: false,
+      singleEvents: true,
+      orderBy: "startTime",
+    })
+    .then((response) => {
+      const events = response.result.items;
+      const container = document.getElementById("events");
+      container.innerHTML = `<h3>Upcoming Events</h3>`;
+      if (events.length) {
+        events.forEach((event) => {
+          const div = document.createElement("div");
+          div.textContent = `${event.summary} — ${event.start.dateTime || event.start.date}`;
+          container.appendChild(div);
+        });
+      } else {
+        container.innerHTML += `<p>No events found.</p>`;
+      }
+    });
+}
+
+// --- Create a New Event via Prompt ---
+function createEvent() {
+  const summary = prompt("Event title:");
+  const start = prompt("Start time (YYYY-MM-DDTHH:MM:SSZ):");
+  const end = prompt("End time (YYYY-MM-DDTHH:MM:SSZ):");
+
+  gapi.client.calendar.events
+    .insert({
+      calendarId: CALENDAR_ID,
+      resource: {
+        summary,
+        start: { dateTime: start },
+        end: { dateTime: end },
+      },
+    })
+    .then(() => {
+      alert("Event created!");
+      loadCalendarEvents();
+    });
+}
+
+// --- Run GAPI init after window loads ---
+window.onload = initGapi;
