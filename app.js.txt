@@ -38,9 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --- Google API Setup ---
-const CLIENT_ID = "blah"; // Replace with your real one
+const CLIENT_ID = "Y396736699041-7224an41ookf6jhju82gsh2ntport39r.apps.googleusercontent.com"; // Replace with your real one
 const SCOPES = "https://www.googleapis.com/auth/calendar";
-const CALENDAR_ID = "blah"; // Replace with your lab calendar ID
+const CALENDAR_ID = "a4623564141efae6e515cab602063d535394165aee9575c947bb87d05591e25b@group.calendar.google.com"; // Replace with your lab calendar ID
 
 function initGapi() {
   gapi.load("client:auth2", () => {
